@@ -7,8 +7,8 @@ If it contains this picture, it means the link is broken.
 
 ### Step by step:
 1. Using bt4 to check if the links contain the picture.
-2. Using Google Console (Service account) to access the documents(Google spread sheet) we need. After connect it, we can use the google library in Pycharm. ** detail [1]
+2. Using Google Console (Service account) to access the documents(Google spread sheet) we need. After connect it, we can use the google library in Pycharm. *detail [1]
 
 
 ### Dtails:
-** [1]: we need to share the document with the Sevice account email as an editor. 
+[1]: we need to share the document with the Sevice account email as an editor. 
