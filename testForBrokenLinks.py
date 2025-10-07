@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 # find the <span class="_advp _aeam"> -> <img class"_9vx6" src={the link below}> ->mark as broken
 # broken link imgsrc="https://static.whatsapp.net/rsrc.php/v4/yB/r/_0dVljceIA5.png"
 
-URL = "https://chat.whatsapp.com/Jqlrp13LLyeDBddMh3reYH"
+URL = "https://chat.whatsapp.com/Gnrh4YhWLwD6a43hl9YUaG"
 response = requests.get(URL)
 html_content = response.content
 soup = BeautifulSoup(html_content, 'html.parser')
