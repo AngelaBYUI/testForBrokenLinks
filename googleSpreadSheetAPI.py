@@ -16,6 +16,7 @@ try: #get the file and the specific sheet
         print(f"Data from row {col_number}:")
         print(col_data)
 
+
         try: #get and mark the non-url line in the WhatsApp links sheet
             # for col in col_data:
             #     if col == "":
