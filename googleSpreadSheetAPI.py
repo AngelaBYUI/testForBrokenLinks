@@ -2,8 +2,6 @@ import gspread
 from gspread import cell
 from gspread.utils import rowcol_to_a1
 
-
-
 # Use the credentials file to authenticate the service account.
 gc = gspread.service_account(filename='credentials.json')
 
