@@ -20,32 +20,65 @@ try: #get the file and the specific sheet
 
         cell_to_mark_empty=[] #to catch the cells which need to show there's no url
         cell_to_mark_broken=[]
-
-        for row in range(1, num_rows+1):
-
-            #check if there's a link in the cell of this line
-            if not col_data[row-1]:
-                cell_location = rowcol_to_a1(row, 7) #rowcol_to_a1 is a fuction from gspread library; (row, col) e.g. (4,3) means cell C4.
+        i=0
+        for row, cell in enumerate(col_data, start=1):
+            if not cell.strip():  # if the cell is empty or just spaces
+                cell_location = rowcol_to_a1(row, 7)
                 cell_to_mark_empty.append({
                     'range': cell_location,
-                    'values': [["empty"]] #means the cell with url doesn't have data. e.g. it's the name of the section in this line.
+                    'values': [["empty"]]
                 })
+                i=i+1
+                print(i,"empty")
+            else:
+                the_link = re.search(r'https?:\/\/.*', cell)
+                if the_link:
+                    i=i+1
+                    print(i)
+                    is_broken=check_links_func(the_link.group())#this function will return true or false
+                    if is_broken:
+                        cell_location = rowcol_to_a1(row, 7)
+                        cell_to_mark_broken.append({
+                            'range': cell_location,
+                            'values': [["broken"]]
+                        })
+                        print("broken")
 
 
+        # for row in range(1, num_rows+1):
+        #
+        #     #check if there's a link in the cell of this line
+        #     if not col_data[row-1]:
+        #         cell_location = rowcol_to_a1(row, 7) #rowcol_to_a1 is a fuction from gspread library; (row, col) e.g. (4,3) means cell C4.
+        #         cell_to_mark_empty.append({
+        #             'range': cell_location,
+        #             'values': [["empty"]] #means the cell with url doesn't have data. e.g. it's the name of the section in this line.
+        #         })
+        #
+        #
         if cell_to_mark_empty:
             worksheet.batch_update([{
                 "range":cell["range"], # the range in cell["range"] is the same as line 25, and it's a key word for line 25 so we can't rename it.
                 "values":cell["values"] #same concept as last line
             }for cell in cell_to_mark_empty])
+        if cell_to_mark_broken:
+            worksheet.batch_update([
+                {"range": cell["range"], "values": cell["values"]}
+                for cell in cell_to_mark_broken
+            ])
 
-        # check the url
-        for idx, cell in enumerate(col_data, start=1): #start=1 bc it needs to match the row number, if we don't put start=1, it'll start from 0 but there's no row 0 in spreadsheet
-            the_link = re.search(r'https?:\/\/.*', cell)
-            if the_link:
-                print(idx)
-                check_links_func(the_link.group())
-            else:
-                print(idx,cell)
+
+        #
+        # # check the url
+        # for idx, cell in enumerate(col_data, start=1): #start=1 bc it needs to match the row number, if we don't put start=1, it'll start from 0 but there's no row 0 in spreadsheet
+        #     the_link = re.search(r'https?:\/\/.*', cell)
+        #     if the_link:
+        #         print(idx)
+        #         check_links_func(the_link.group())
+        #     else:
+        #         print(idx,cell)
+
+        #line for row in range(1, num_rows+1): to print(idx,cell)
 
 
 

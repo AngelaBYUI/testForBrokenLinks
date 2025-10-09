@@ -22,6 +22,6 @@ def check_links_func(URL):
                 for div3 in third_layer_div:
                     imgForLink=div3.find("img", class_="_9vx6") #tips: if you can't find section or id, try to find the next layer class, this is how it works
                     if imgForLink and imgForLink.get("src") == "https://static.whatsapp.net/rsrc.php/v4/yB/r/_0dVljceIA5.png":
-                        print("It's a broken link")
+                       return True
                     else:
-                        print(imgForLink)
+                        return False
