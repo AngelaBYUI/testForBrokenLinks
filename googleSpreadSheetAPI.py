@@ -1,6 +1,8 @@
 import gspread
 from gspread import cell
 from gspread.utils import rowcol_to_a1
+from testForBrokenLinks import check_links_func
+import re
 
 # Use the credentials file to authenticate the service account.
 gc = gspread.service_account(filename='credentials.json')
@@ -9,7 +11,7 @@ gc = gspread.service_account(filename='credentials.json')
 # Replace 'YOUR_SPREADSHEET_ID' with the ID from your sheet's URL.
 try: #get the file and the specific sheet
     spreadsheet = gc.open_by_key('14Ipv7V2Is7FbfDvDAWMZ6aCQp6cWs8iPGIpPHfpIUfU') #the key is url for the sheet but only the strings between /d/ and /edit
-    worksheet = spreadsheet.get_worksheet(1) #to access the sheet by index. The first sheet should be 0 and so on.
+    worksheet = spreadsheet.get_worksheet(0) #to access the sheet by index. The first sheet should be 0 and so on.
     try: #get the dta from specific column but restrict in the len(rows) bc we don't want to mark a thousand empty lines.
         allDataInList = worksheet.get_all_values()
         num_rows = len(allDataInList) #to get how many lines/rows have data and we will restrict the marking stuff in this range.
@@ -23,28 +25,39 @@ try: #get the file and the specific sheet
 
             #check if there's a link in the cell of this line
             if not col_data[row-1]:
-                cell_location = rowcol_to_a1(row, 5) #rowcol_to_a1 is a fuction from gspread library; (row, col) e.g. (4,3) means cell C4.
+                cell_location = rowcol_to_a1(row, 7) #rowcol_to_a1 is a fuction from gspread library; (row, col) e.g. (4,3) means cell C4.
                 cell_to_mark_empty.append({
                     'range': cell_location,
                     'values': [["empty"]] #means the cell with url doesn't have data. e.g. it's the name of the section in this line.
                 })
-         # to mark there's no url line
+
+
         if cell_to_mark_empty:
             worksheet.batch_update([{
                 "range":cell["range"], # the range in cell["range"] is the same as line 25, and it's a key word for line 25 so we can't rename it.
                 "values":cell["values"] #same concept as last line
             }for cell in cell_to_mark_empty])
 
+        # check the url
+        for idx, cell in enumerate(col_data, start=1): #start=1 bc it needs to match the row number, if we don't put start=1, it'll start from 0 but there's no row 0 in spreadsheet
+            the_link = re.search(r'https?:\/\/.*', cell)
+            if the_link:
+                print(idx)
+                check_links_func(the_link.group())
+            else:
+                print(idx,cell)
 
 
-        try: #get and mark the non-url line in the WhatsApp links sheet
-            for col in col_data:
-                if col == "":
-                    rowNumber = 1
-                    print(col)
-                    print("It's empty")
-        except gspread.exceptions.APIError as e:
-            print("Error happened for marking the empty data")
+
+        #
+        # try: #get and mark the non-url line in the WhatsApp links sheet
+        #     for col in col_data:
+        #         if col == "":
+        #             rowNumber = 1
+        #             print(col)
+        #             print("It's empty")
+        # except gspread.exceptions.APIError as e:
+        #     print("Error happened for marking the empty data")
 
     except gspread.exceptions.APIError as e:
         print(f"An API error occurred: {e}")
